@@ -635,8 +635,24 @@
     return new TextDecoder().decode(result);
   }
   async function copyToClipboard(value) {
-    try { await navigator.clipboard.writeText(String(value)); notify('Copié dans le presse-papiers'); }
-    catch (_) { notify('Copie impossible : vérifie les permissions'); }
+    const text=String(value||'');
+    if(!text.trim()){notify('Ce bloc est vide : colle ton texte avant de le copier');return false;}
+    try {
+      if(navigator.clipboard && navigator.clipboard.writeText){
+        await navigator.clipboard.writeText(text);
+        notify('✓ Texte copié — prêt à coller');
+        return true;
+      }
+    } catch (_) { /* Essayez la copie native pour Safari. */ }
+    const temp=document.createElement('textarea');
+    temp.value=text;temp.setAttribute('readonly','');
+    temp.style.cssText='position:fixed;left:-9999px;top:0;opacity:0;';
+    document.body.appendChild(temp);temp.focus();temp.select();
+    let copied=false;
+    try {copied=!!document.execCommand('copy');}catch(_){}
+    temp.remove();
+    notify(copied?'✓ Texte copié — prêt à coller':'Copie impossible. Sélectionne le texte pour le copier.');
+    return copied;
   }
   async function revealVault(id) {
     const row = items.find(x => x.id === id);
@@ -746,8 +762,7 @@
     if (act === 'delete-block') await deleteDocBlock(id);
     if (act === 'copy-block') {
       const r=items.find(x=>x.id===id);
-      if(r) {
-        await copyToClipboard(blockText(r));
+      if(r && await copyToClipboard(blockText(r))) {
         const old=btn.innerHTML;btn.classList.add('copied');btn.innerHTML='✓ Copié';
         setTimeout(()=>{if(btn.isConnected){btn.classList.remove('copied');btn.innerHTML=old;}},1700);
       }
