@@ -7,10 +7,26 @@ préservé dans la branche GitHub "archive/ancienne-ia-academie-2026-10-19".
 
 Modules :
 - Plusieurs projets, avec leur propre espace.
+- Content Studio : pages de documents à blocs façon Notion, par projet.
+  * Créer une page vierge ou un modèle fiche produit Shopify / Meta Ads / e-mail.
+  * Texte, titres, blocs individuels à copier, notes, séparateurs.
+  * « Coller maintenant » : crée un bloc avec le contenu du presse-papiers si le navigateur le permet.
+  * Copier chaque bloc séparément ou copier tout le document.
+  * Déplacer un bloc avec les flèches, dupliquer, insérer entre deux blocs.
+  * Ctrl/Cmd + Entrée : nouveau bloc sous le bloc actuel.
+  * Enregistrement automatique local ou partagé une fois Supabase configuré.
+  * Recherche de pages et de textes, export d'une page en .txt.
+  * Statut simple « Brouillon », « À valider », « Prêt à coller » pour éviter la publication d'un texte non relu.
+  * Les anciens textes sont récupérables via « Importer ici » dans une page (ils ne sont pas effacés automatiquement).
 - Accès et identifiants, mots de passe chiffrés côté navigateur.
 - Copywriting par projet (hooks, publicités, scripts, landing pages).
 - To-do list avec responsable, priorité, date et statut.
 - Export/import JSON local, PWA installable sur iPhone et ordinateur.
+
+Le Content Studio ne permet pas encore l'édition simultanée caractère par caractère :
+les modifications sont synchronisées entre appareils après sauvegarde,
+mais deux personnes écrivant en même temps dans le même bloc peuvent écraser la version de l'autre.
+Il est préférable d'attribuer chaque page à un éditeur principal.
 
 ATTENTION : il existe deux modes
 1. LOCAL (immédiat) : les informations restent sur l'appareil.
