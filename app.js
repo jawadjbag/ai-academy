@@ -237,7 +237,7 @@
       '<div class="doc-block-rail"><span class="drag-mark" title="Utilise les flèches pour déplacer ce bloc">⋮⋮</span></div>'+
       '<div class="doc-block-content">'+
         '<div class="doc-block-toolbar"><label class="type-select"><span class="sr-only">Type de bloc</span><select data-block-type="'+esc(row.id)+'" aria-label="Type de bloc">'+select+'</select></label>'+
-          '<span class="doc-block-number">'+esc(label || 'Bloc '+(i+1))+'</span><div class="doc-block-tools">'+
+          '<span class="doc-block-number '+(label?'doc-block-label':'')+'">'+esc(label || 'Bloc '+(i+1))+'</span><div class="doc-block-tools">'+
           (!isDivider?'<button type="button" class="doc-mini copy-trigger" data-action="copy-block" data-id="'+esc(row.id)+'" title="Copier ce bloc"><span>▣</span> Copier</button>':'')+
           '<button type="button" class="doc-mini square-mini" data-action="block-above" data-id="'+esc(row.id)+'" title="Monter le bloc" aria-label="Monter le bloc" '+(i===0?'disabled':'')+'>↑</button>'+
           '<button type="button" class="doc-mini square-mini" data-action="block-below" data-id="'+esc(row.id)+'" title="Descendre le bloc" aria-label="Descendre le bloc" '+(i===total-1?'disabled':'')+'>↓</button>'+
