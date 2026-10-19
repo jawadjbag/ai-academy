@@ -330,6 +330,7 @@
     return (a+b)/2;
   }
   async function addDocBlock(type='text', afterId, copyFrom) {
+    flushAllBlocks();
     const id=activeDocId();
     if (!id) { showNewDoc(); return; }
     const blocks=documentBlocks(id);
@@ -669,6 +670,9 @@
   }
 
   document.addEventListener('click', async e => {
+    const btn = e.target.closest('[data-action]');
+    if (!btn) return;
+    const act = btn.dataset.action, id = btn.dataset.id;
 
     if (act === 'create-doc') showNewDoc();
     if (act === 'select-doc') { flushAllBlocks();selectDoc(id); }
@@ -695,9 +699,6 @@
     }
     if (act === 'import-legacy') await importLegacy();
 
-    const btn = e.target.closest('[data-action]');
-    if (!btn) return;
-    const act = btn.dataset.action, id = btn.dataset.id;
     if (act === 'overview') setActive('overview');
     if (act === 'select-project') setActive(id);
     if (act === 'new-project') openProjectForm();
