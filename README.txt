@@ -58,3 +58,36 @@ La consultation hors connexion de l'interface est possible. Le mode Équipe
 nécessite Internet pour lire/modifier les données.
 
 Versions : JBI Hub V1 — 2026-10-19
+
+
+V2 — STUDIO DE CONTENU COLLABORATIF (19/10/2026)
+- Dans chaque projet : ouvrir "Vos pages & blocs".
+- Bouton "Nouvelle page" : choisir Page vierge, Fiche produit Shopify,
+  Publicité Meta ou E-mail marketing. Chaque modèle contient des blocs préparés.
+- Coller un texte directement dans un bloc : le contenu est enregistré
+  automatiquement (dans le navigateur en local ou dans Supabase en mode équipe).
+- "Coller maintenant" tente de lire le presse-papiers, sinon crée un bloc vide
+  prêt à recevoir du texte via Coller sur iPhone ou Ctrl/Cmd+V sur ordinateur.
+- Chaque bloc a son propre bouton COPIER pour envoyer le texte brut au presse-papiers.
+- "Copier toute la page" copie les blocs dans leur ordre.
+- Type de bloc modifiable : texte, titre, bloc à copier, note, séparateur.
+- Déplacement des blocs par ↑ et ↓, duplication, suppression.
+- Ajouter un nouveau bloc n'importe où via + entre les blocs.
+- Raccourci Ctrl/Cmd+Entrée : créer un bloc sous celui en cours.
+- Renommage, suppression et export .txt de la page.
+- Les anciens textes enregistrés avec le module Copywriting restent disponibles :
+  bouton "Importer ici" pour les transformer en blocs, sans perte de données.
+- Barre latérale des pages avec recherche et état Brouillon / À valider / Prêt
+  si le suivi éditorial a été activé dans l'interface.
+- Nouveau logo d'application JBI Hub pour l'écran d'accueil.
+
+LIMITES ACTUELLES À CONNAÎTRE
+- Sans Supabase configuré, un associé ouvrant le même lien ne verra pas les
+  modifications des autres. Ne confondez pas déploiement et synchronisation.
+- Le suivi en temps réel nécessite Internet. Les modifications locales hors
+  connexion NE SE SYNCHRONISENT PAS automatiquement après activation du cloud.
+- Le contenu des blocs est en texte brut, pensé pour un copier-coller propre
+  vers Shopify/Meta ; pas d'éditeur riche HTML/WYSIWYG pour l'instant.
+- L'enregistrement automatique sauvegarde à la fin d'une courte pause (~650 ms).
+- Le contenu est partagé entre les membres autorisés ; tout le monde peut
+  modifier/supprimer les pages en V2. Pas de commentaires ni permissions par page.
