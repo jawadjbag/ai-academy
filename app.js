@@ -859,7 +859,7 @@
     }
     if(e.target.id==='pageSearch'){
       const value=e.target.value.toLocaleLowerCase('fr').trim();
-      $('.doc-page-tab').forEach(btn=>{
+      $$('.doc-page-tab').forEach(btn=>{
         const page=items.find(row=>row.id===btn.dataset.id);
         const text=page?documentBlocks(page.id).map(row=>row.data.body||'').join(' '):'';
         btn.hidden=!!value&&!(btn.textContent+' '+text).toLocaleLowerCase('fr').includes(value);
