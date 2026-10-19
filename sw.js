@@ -1,4 +1,4 @@
-const VERSION = 'jbi-hub-v1-20261019';
+const VERSION = 'jbi-hub-v2-20261019';
 const SHELL = ['./', './index.html', './styles.css', './app.js', './config.js', './icon.svg', './manifest.webmanifest'];
 self.addEventListener('install', event => {
   event.waitUntil(caches.open(VERSION).then(cache => cache.addAll(SHELL)).then(() => self.skipWaiting()));
@@ -15,8 +15,8 @@ self.addEventListener('fetch', event => {
     }).catch(() => caches.match('./index.html')));
     return;
   }
-  event.respondWith(caches.match(request).then(cached => cached || fetch(request).then(response => {
+  event.respondWith(fetch(request).then(response => {
     if (response.ok) { const copy = response.clone(); caches.open(VERSION).then(cache => cache.put(request,copy)); }
     return response;
-  })));
+  }).catch(() => caches.match(request)));
 });
