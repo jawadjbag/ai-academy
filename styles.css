@@ -254,7 +254,7 @@ a{color:inherit;text-decoration:none}
 .docs-workspace{grid-template-columns:1fr}
 .docs-sidebar{padding:15px;border-right:0;border-bottom:1px solid var(--line)}
 .docs-sidebar-top{margin-bottom:9px}
-.doc-search-wrap{display:none}
+.doc-search-wrap{display:flex;max-width:350px;margin-bottom:12px}
 .docs-page-list{flex-direction:row;overflow-x:auto;overflow-y:hidden;max-height:none;gap:7px;padding-bottom:4px}
 .doc-page-tab{flex-shrink:0;min-width:135px;width:auto;padding:9px}
 .doc-page-info strong{max-width:155px}
