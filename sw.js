@@ -1,5 +1,5 @@
-const VERSION = 'jbi-hub-v2-20261019';
-const SHELL = ['./', './index.html', './styles.css', './app.js', './config.js', './icon.svg', './manifest.webmanifest'];
+const VERSION = 'jbi-hub-v3-20261019';
+const SHELL = ['./', './index.html', './styles.css', './app.js', './config.js', './icon.svg', './manifest.webmanifest', './icon-192.png', './icon-512.png'];
 self.addEventListener('install', event => {
   event.waitUntil(caches.open(VERSION).then(cache => cache.addAll(SHELL)).then(() => self.skipWaiting()));
 });
