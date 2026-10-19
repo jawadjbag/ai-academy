@@ -24,7 +24,7 @@
   }
   let items = readJson(DATA_KEY, null);
   if (!Array.isArray(items)) { items = seeds(); localStorage.setItem(DATA_KEY, JSON.stringify(items)); }
-  let active = localStorage.getItem(ACTIVE_KEY) || initialProjectId();
+  let active = localStorage.getItem(ACTIVE_KEY) || 'overview';
   let filter = 'all';
   let vaultPhrase = '';
   let sb = null;
