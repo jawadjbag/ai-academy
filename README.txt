@@ -73,7 +73,11 @@ Ordinateur : ouvrir dans Chrome/Edge > Installer l'application.
 La consultation hors connexion de l'interface est possible. Le mode Équipe
 nécessite Internet pour lire/modifier les données.
 
-Versions : JBI Hub V1 — 2026-10-19
+Version : JBI Hub V2 « Content Studio » — 2026-10-19
+Tests de logique réussis : sélection des projets, création de pages, modèles Shopify,
+édition/sauvegarde, copie individuelle, statut de validation, recherche et collage rapide.
+Le déploiement public et la synchronisation Supabase doivent être vérifiés avec les
+vrais comptes de l'équipe.
 
 
 V2 — STUDIO DE CONTENU COLLABORATIF (19/10/2026)
