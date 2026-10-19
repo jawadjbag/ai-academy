@@ -401,11 +401,15 @@
         realtimeChannel = sb.channel('jbi-hub-shared-items').on('postgres_changes',
           {event:'*',schema:'public',table:'workspace_items'}, () => loadCloud()).subscribe();
       } else { mode='auth'; }
-      sb.auth.onAuthStateChange(async (event,newSession) => {
+      sb.auth.onAuthStateChange((event,newSession) => {
+        // Éviter des appels auth/REST asynchrones directement dans ce callback Supabase.
         if (event === 'SIGNED_IN' && newSession && mode !== 'cloud') {
-          session = newSession; mode='cloud'; await loadCloud();
-          if (!realtimeChannel) realtimeChannel = sb.channel('jbi-hub-shared-items')
-            .on('postgres_changes',{event:'*',schema:'public',table:'workspace_items'},() => loadCloud()).subscribe();
+          session = newSession; mode='cloud'; render();
+          setTimeout(async () => {
+            await loadCloud();
+            if (!realtimeChannel) realtimeChannel = sb.channel('jbi-hub-shared-items')
+              .on('postgres_changes',{event:'*',schema:'public',table:'workspace_items'},() => loadCloud()).subscribe();
+          }, 0);
         }
         if (event === 'SIGNED_OUT') { session=null; mode='auth'; items=[]; vaultPhrase=''; render(); }
       });
