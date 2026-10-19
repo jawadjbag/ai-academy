@@ -1,39 +1,54 @@
 <!doctype html>
-<html lang="fr" class="light">
+<html lang="fr">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <meta name="theme-color" content="#f5f3ee" />
-  <meta name="apple-mobile-web-app-capable" content="yes" />
-  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
-  <meta name="apple-mobile-web-app-title" content="AI Academy" />
-  <title>AI Academy</title>
-  <link rel="manifest" href="manifest.webmanifest" />
-  <link rel="apple-touch-icon" href="icons/icon-192.png" />
-  <link rel="stylesheet" href="styles.css" />
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
+  <meta name="theme-color" content="#111827"/>
+  <meta name="description" content="JBI Hub, l'espace de travail privé de ton équipe."/>
+  <meta name="apple-mobile-web-app-capable" content="yes"/>
+  <meta name="apple-mobile-web-app-title" content="JBI Hub"/>
+  <title>JBI Hub — Workspace</title>
+  <link rel="manifest" href="./manifest.webmanifest"/>
+  <link rel="icon" type="image/svg+xml" href="./icon.svg"/>
+  <link rel="stylesheet" href="./styles.css"/>
 </head>
 <body>
-  <div class="app-shell">
-    <header class="topbar">
-      <div>
-        <div class="eyebrow">AI ACADEMY</div>
-        <h1 id="pageTitle">Dashboard</h1>
+  <div class="shell" id="shell">
+    <aside class="sidebar">
+      <a class="brand" href="#workspace" aria-label="JBI Hub, accueil">
+        <span class="brand-mark">J<span>.</span></span>
+        <span class="brand-copy"><strong>JBI Hub</strong><small>TEAM WORKSPACE</small></span>
+      </a>
+      <div class="side-label">ESPACE DE TRAVAIL</div>
+      <button class="side-link selected" id="allProjectsBtn" type="button" data-action="overview"><span class="side-icon">◫</span> Vue d’ensemble</button>
+      <div class="side-head"><span>PROJETS</span><button type="button" aria-label="Nouveau projet" title="Nouveau projet" data-action="new-project">＋</button></div>
+      <div id="projectNav" class="project-nav"></div>
+      <div class="side-footer">
+        <div class="status" id="modeStatus"><span class="status-dot"></span><span>Mode local</span></div>
+        <button class="side-link" type="button" data-action="settings"><span class="side-icon">⚙</span> Paramètres</button>
+        <p>Un endroit pour avancer ensemble.</p>
       </div>
-      <button id="themeBtn" class="icon-btn" aria-label="Changer le thème">◐</button>
-    </header>
+    </aside>
 
-    <main id="app" class="content"></main>
+    <div class="workspace">
+      <header class="topbar">
+        <div class="mobile-brand"><span class="brand-mark">J<span>.</span></span><strong>JBI Hub</strong></div>
+        <div class="breadcrumb"><span>Workspace</span><span class="slash">/</span><strong id="breadcrumbTitle">Vue d’ensemble</strong></div>
+        <div class="top-actions">
+          <span class="top-status" id="topStatus">● Données locales</span>
+          <button class="avatar-btn" type="button" title="Comptes et paramètres" aria-label="Ouvrir les paramètres" data-action="settings">JB</button>
+        </div>
+      </header>
 
-    <nav class="bottom-nav" aria-label="Navigation principale">
-      <button data-route="home" class="nav-item active"><span>⌂</span><small>Accueil</small></button>
-      <button data-route="learn" class="nav-item"><span>◎</span><small>Cours</small></button>
-      <button data-route="lab" class="nav-item"><span>⚙</span><small>Lab</small></button>
-      <button data-route="knowledge" class="nav-item"><span>◇</span><small>Savoir</small></button>
-      <button data-route="notes" class="nav-item"><span>✎</span><small>Notes</small></button>
-    </nav>
+      <main id="main" class="main"></main>
+    </div>
   </div>
-
-  <template id="toastTemplate"><div class="toast"></div></template>
-  <script src="app.js"></script>
+  <dialog id="modal" class="modal">
+    <div id="modalBody"></div>
+  </dialog>
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+  <script src="./config.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+  <script src="./app.js"></script>
 </body>
 </html>
