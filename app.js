@@ -692,9 +692,18 @@
     const {data,error} = await sb.from('workspace_items').select('*').order('created_at',{ascending:true});
     if (error) { cloudError = error.message; notify('Accès refusé : ' + error.message); return; }
     if (!data.length) {
-      const {error:seedError} = await sb.from('workspace_items').insert(seeds());
-      if (seedError) { notify('Compte non autorisé : contactez l’administrateur'); return; }
-      items = seeds();
+      const local=readJson(DATA_KEY,[]);
+      const hasRealWork=Array.isArray(local) && local.some(x=>
+        x && (x.kind !== 'project' || !initialNames.includes(x.data?.name)));
+      let starting=seeds();
+      if(hasRealWork && confirm(
+        'Du contenu existe sur cet appareil. Voulez-vous importer ces projets, textes et tâches dans l’espace partagé ? Les entrées chiffrées du coffre seront également transférées.')){
+        starting=local.filter(x=>x && ['project','copy','task','vault'].includes(x.kind) &&
+          typeof x.id==='string' && x.data && typeof x.data==='object');
+      }
+      const {error:seedError} = await sb.from('workspace_items').upsert(starting);
+      if (seedError) { notify('Initialisation refusée : vérifiez votre accès équipe'); return; }
+      items = starting;
     } else {
       const localDirty = items.filter(x => dirtyBlocks.has(x.id));
       const remoteIds = new Set(data.map(x => x.id));
