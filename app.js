@@ -230,13 +230,14 @@
       copy:'Colle ton texte ici. Ton associé pourra le copier en un clic.',
       callout:'Information importante, instruction ou note pour l’équipe…'
     }[type] || 'Écris ici…';
+    const label = d.label ? String(d.label) : '';
     const select = ['text','heading','copy','callout','divider'].map(t =>
       '<option value="'+t+'" '+(t===type?'selected':'')+'>'+blockGlyph(t)+'  '+blockTypeName(t)+'</option>').join('');
     return '<article class="doc-block doc-block-'+esc(type)+'" data-block="'+esc(row.id)+'">'+
       '<div class="doc-block-rail"><span class="drag-mark" title="Utilise les flèches pour déplacer ce bloc">⋮⋮</span></div>'+
       '<div class="doc-block-content">'+
         '<div class="doc-block-toolbar"><label class="type-select"><span class="sr-only">Type de bloc</span><select data-block-type="'+esc(row.id)+'" aria-label="Type de bloc">'+select+'</select></label>'+
-          '<span class="doc-block-number">Bloc '+(i+1)+'</span><div class="doc-block-tools">'+
+          '<span class="doc-block-number">'+esc(label || 'Bloc '+(i+1))+'</span><div class="doc-block-tools">'+
           (!isDivider?'<button type="button" class="doc-mini copy-trigger" data-action="copy-block" data-id="'+esc(row.id)+'" title="Copier ce bloc"><span>▣</span> Copier</button>':'')+
           '<button type="button" class="doc-mini square-mini" data-action="block-above" data-id="'+esc(row.id)+'" title="Monter le bloc" aria-label="Monter le bloc" '+(i===0?'disabled':'')+'>↑</button>'+
           '<button type="button" class="doc-mini square-mini" data-action="block-below" data-id="'+esc(row.id)+'" title="Descendre le bloc" aria-label="Descendre le bloc" '+(i===total-1?'disabled':'')+'>↓</button>'+
@@ -245,7 +246,7 @@
           '</div></div>'+
           (isDivider?'<div class="doc-line" role="separator"></div>':
           '<textarea class="doc-input" data-block-editor="'+esc(row.id)+'" data-type="'+esc(type)+'" rows="2" spellcheck="true" '+
-          'placeholder="'+esc(placeholder)+'" aria-label="'+esc(blockTypeName(type))+'">'+esc(d.body || '')+'</textarea>')+
+          'placeholder="'+esc(label ? 'Colle ici : '+label+'…' : placeholder)+'" aria-label="'+esc(label || blockTypeName(type))+'">'+esc(d.body || '')+'</textarea>')+
         '</div></article>'+
         '<div class="block-insert"><button type="button" class="block-insert-btn" data-action="insert-block" data-id="'+esc(row.id)+'" aria-label="Ajouter un bloc après celui-ci">＋ <span>Ajouter un bloc ici</span></button></div>';
   }
@@ -279,6 +280,7 @@
         '<button type="button" class="btn small doc-copy-all" data-action="copy-doc" data-id="'+esc(doc.id)+'">▣ Copier toute la page</button></div>'+
         '<div class="doc-editor-blocks">'+body+'</div>'+
         '<div class="doc-addbar"><div class="doc-addbar-label">AJOUTER UN BLOC</div><div class="doc-addbar-buttons">'+
+          '<button type="button" class="block-choice featured-choice" data-action="paste-block"><span>⌁</span> Coller maintenant</button>'+
           '<button type="button" class="block-choice" data-action="add-block" data-type="text"><span>¶</span> Texte</button>'+
           '<button type="button" class="block-choice" data-action="add-block" data-type="copy"><span>▣</span> À copier</button>'+
           '<button type="button" class="block-choice" data-action="add-block" data-type="heading"><span>H</span> Titre</button>'+
@@ -304,6 +306,13 @@
     showModal('Nouvelle page',
       '<p class="helper">Sépare les contenus de chaque projet : fiche produit, scripts vidéo, emails, annonces…</p>'+
       '<form data-form="doc-create">'+field('Nom de la page','title','','text',true,'Ex. : Fiche produit Shopify')+
+      '<div class="field"><label>Modèle de départ</label><select name="template">'+
+       '<option value="blank">◻ Page vierge</option>'+
+       '<option value="shopify">🛍 Fiche produit Shopify</option>'+
+       '<option value="meta">↗ Publicité Meta (hooks, textes, CTA)</option>'+
+       '<option value="email">✉ E-mail marketing</option>'+
+      '</select></div>'+
+      '<p class="helper">Les modèles créent des blocs prêts à remplir.</p>'+
       actions('Créer la page')+'</form>');
   }
   function showRenameDoc(id) {
@@ -313,11 +322,53 @@
       field('Nom de la page','title',row.data.title,'text',true,'Ex. : Textes Shopify')+
       actions('Enregistrer')+'</form>');
   }
-  async function createDoc(title) {
+  function getStarterBlocks(template) {
+    const blocks = {
+      shopify:[
+        ['heading','Fiche produit'],
+        ['copy','', 'Nom / titre du produit'],
+        ['copy','', 'Accroche & proposition de valeur'],
+        ['copy','', 'Description de la fiche produit'],
+        ['copy','', 'Bénéfices et points forts'],
+        ['copy','', 'Objections & réassurance'],
+        ['copy','', 'SEO — méta-description']
+      ],
+      meta:[
+        ['heading','Créas publicitaires Meta'],
+        ['copy','', 'Hook principal'],
+        ['copy','', 'Texte principal'],
+        ['copy','', 'Titre de la publicité'],
+        ['copy','', 'Appel à l’action'],
+        ['callout','', 'Angle marketing / notes pour l’équipe']
+      ],
+      email:[
+        ['heading','Campagne e-mail'],
+        ['copy','', 'Objet'],
+        ['copy','', 'Pré-header'],
+        ['copy','', 'Corps de l’e-mail'],
+        ['copy','', 'Bouton & CTA'],
+        ['callout','', 'Segmentation et consignes']
+      ]
+    };
+    return blocks[template] || [];
+  }
+  async function createDoc(title,template='blank') {
     const pgs=documentPages();
     const row=stamp('copy', active,{doc_type:'page',title:title.trim()||'Nouvelle page',
       icon:'▤',position:(pgs.length+1)*100});
-    if (await saveRow(row)) { docChoice[active]=row.id;localStorage.setItem(DOC_CHOICE_KEY,JSON.stringify(docChoice));
+    if (await saveRow(row)) {
+      const starter=getStarterBlocks(template);
+      if(starter.length){
+        const blocks=starter.map(([block_type,body,label],i)=>stamp('copy',active,{
+          doc_type:'block',doc_id:row.id,block_type,body:body||'',label:label||'',position:(i+1)*100
+        }));
+        if(mode==='cloud'){
+          const {error}=await sb.from('workspace_items').upsert(blocks);
+          if(error)notify('Modèle partiel : '+error.message);
+          else items.push(...blocks);
+        } else {items.push(...blocks);persistLocal();}
+      }
+      docChoice[active]=row.id;localStorage.setItem(DOC_CHOICE_KEY,JSON.stringify(docChoice));
       modal.close();render();notify('Page créée');
     }
   }
@@ -337,7 +388,7 @@
     const index=afterId ? Math.max(0,blocks.findIndex(x=>x.id===afterId)+1):blocks.length;
     const base=copyFrom||{};
     const row=stamp('copy',active,{doc_type:'block',doc_id:id,block_type:type,
-      body:base.body||'',position:newPosition(blocks,index)});
+      body:base.body||'',label:base.label||'',position:newPosition(blocks,index)});
     if(await saveRow(row)) {
       requestAnimationFrame(()=>{
         const input=$('textarea[data-block-editor="'+row.id+'"]');
@@ -402,7 +453,7 @@
     if(!docId)return;
     const old=oldCopies();if(!old.length)return;
     if(!confirm('Importer les '+old.length+' anciens textes dans cette page ?'))return;
-    let at=documentBlocks(docId).length*100;
+    let at=Math.max(0,...documentBlocks(docId).map(x=>Number(x.data.position)||0));
     const transformed=old.map(x=>stamp('copy',active,{
       doc_type:'block',doc_id:docId,block_type:'copy',body:
       [x.data.title,x.data.body].filter(Boolean).join('\n\n'),
@@ -698,6 +749,13 @@
       }
     }
     if (act === 'import-legacy') await importLegacy();
+    if (act === 'paste-block') {
+      let value='';
+      try { if(navigator.clipboard && navigator.clipboard.readText)value=await navigator.clipboard.readText(); } catch(_){}
+      await addDocBlock('copy',null,{body:value||''});
+      if(!value) notify('Colle ton texte dans ce nouveau bloc.');
+      else notify('Texte collé dans un nouveau bloc');
+    }
 
     if (act === 'overview') setActive('overview');
     if (act === 'select-project') setActive(id);
@@ -802,7 +860,7 @@
     if (submit) submit.disabled = true;
     try {
 
-      if (kind === 'doc-create') await createDoc(d.title);
+      if (kind === 'doc-create') await createDoc(d.title,d.template);
       if (kind === 'doc-rename') {
         const r=items.find(x=>x.id===id);
         if(r&&await saveRow(stamp('copy',r.project_id,{...r.data,title:d.title.trim()},r.id))){
