@@ -257,7 +257,7 @@
       const count=documentBlocks(p.id).length, selected=p.id===chosen;
       return '<button type="button" class="doc-page-tab '+(selected?'active':'')+'" data-action="select-doc" data-id="'+esc(p.id)+'">'+
         '<span class="doc-page-emoji">'+esc(p.data.icon || '▤')+'</span>'+
-        '<span class="doc-page-info"><strong>'+esc(p.data.title || 'Sans titre')+'</strong><small>'+count+' bloc'+(count>1?'s':'')+'</small></span>'+
+        '<span class="doc-page-info"><strong>'+esc(p.data.title || 'Sans titre')+'</strong><small>'+count+' bloc'+(count>1?'s':'')+' · '+(p.data.status==='ready'?'Prêt':p.data.status==='review'?'À valider':'Brouillon')+'</small></span>'+
         '<span class="doc-page-arrow">›</span></button>';
     }).join('');
     let documentBody='';
@@ -273,7 +273,11 @@
         '<div><div class="doc-kicker">DOCUMENT PARTAGÉ <span class="doc-kicker-dot">·</span> '+blocks.length+' bloc'+(blocks.length>1?'s':'')+'</div>'+
           '<h3 class="doc-title">'+esc(doc.data.title || 'Nouvelle page')+'</h3>'+
           '<div class="doc-summary">Colle, organise, modifie et transmets tes textes sans perdre de temps.</div></div>'+
-        '<div class="doc-editor-head-actions"><button type="button" class="btn small" data-action="rename-doc" data-id="'+esc(doc.id)+'">✎ Renommer</button>'+
+        '<div class="doc-editor-head-actions"><label class="doc-status-picker"><span class="sr-only">Statut du document</span><select data-doc-status="'+esc(doc.id)+'" aria-label="Statut de validation du document">'+
+          '<option value="draft" '+((doc.data.status||'draft')==='draft'?'selected':'')+'>◌ Brouillon</option>'+
+          '<option value="review" '+(doc.data.status==='review'?'selected':'')+'>◷ À valider</option>'+
+          '<option value="ready" '+(doc.data.status==='ready'?'selected':'')+'>✓ Prêt à coller</option>'+
+          '</select></label><button type="button" class="btn small" data-action="rename-doc" data-id="'+esc(doc.id)+'">✎ Renommer</button>'+
         '<button type="button" class="btn small" data-action="download-doc" data-id="'+esc(doc.id)+'" title="Exporter un fichier texte">↓ .txt</button>'+
         '<button type="button" class="btn small danger" data-action="delete-doc" data-id="'+esc(doc.id)+'" title="Supprimer la page">×</button></div></div>'+
         '<div class="doc-editor-banner"><span>↗</span><span>Chaque bloc dispose de son propre bouton <strong>Copier</strong> pour coller directement dans ton shop.</span>'+
@@ -355,7 +359,7 @@
   async function createDoc(title,template='blank') {
     const pgs=documentPages();
     const row=stamp('copy', active,{doc_type:'page',title:title.trim()||'Nouvelle page',
-      icon:'▤',position:(pgs.length+1)*100});
+      icon:'▤',status:'draft',position:(pgs.length+1)*100});
     if (await saveRow(row)) {
       const starter=getStarterBlocks(template);
       if(starter.length){
@@ -799,6 +803,12 @@
     }
   });
   document.addEventListener('change', async e => {
+    if(e.target.matches('[data-doc-status]')){
+      const row=items.find(x=>x.id===e.target.dataset.docStatus);
+      if(row && await saveRow(stamp('copy',row.project_id,{...row.data,status:e.target.value},row.id))){
+        notify(e.target.value==='ready'?'Document prêt à coller':'Statut mis à jour');
+      }
+    }
 
     if(e.target.matches('select[data-block-type]')){
       const id=e.target.dataset.blockType,r=items.find(x=>x.id===id);
@@ -826,7 +836,9 @@
     if(e.target.id==='pageSearch'){
       const value=e.target.value.toLocaleLowerCase('fr').trim();
       $('.doc-page-tab').forEach(btn=>{
-        btn.hidden=!!value&&!btn.textContent.toLocaleLowerCase('fr').includes(value);
+        const page=items.find(row=>row.id===btn.dataset.id);
+        const text=page?documentBlocks(page.id).map(row=>row.data.body||'').join(' '):'';
+        btn.hidden=!!value&&!(btn.textContent+' '+text).toLocaleLowerCase('fr').includes(value);
       });
     }
   });
